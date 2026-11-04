@@ -14,42 +14,47 @@ public class Main {
             return;
         }
 
-        // Load language bundle for messages in Main
-        ResourceBundle bundle;
-        if (choice == 1) {
-            bundle = ResourceBundle.getBundle("Vi");
-        } else {
-            bundle = ResourceBundle.getBundle("En");
-        }
+       
+        
         // Load language bundle for Validate
         validate.checkLanguage(choice);
+        ResourceBundle bundle = validate.getBundle();
 
         boolean check = true;
-        while (check) {
+        while (check) {            
+            
             String accountNumber = validate.checkInputAccountNumber();
-            String password = validate.checkInputPassword();
-            Account account = new Account(accountNumber, password);
-
-            // 1: account does not exist, 2: wrong password, 3: correct
-            int result = manager.checkLogin(account);
-            if (result == 3) {
-                // Login info is correct: verify captcha
-                checkCaptcha(manager, validate, bundle);
-                check = false;
-            } else {
-                // Show the error of this attempt, then ask again
-                System.out.println(bundle.getString("login_error" + result));
-                System.out.println("-----------------------");
+            if (!manager.checkAccountExist(accountNumber)) {
+                System.err.println(bundle.getString("login_error1"));
+                 System.out.println("-----------------------");
                 System.out.println(bundle.getString("login_again"));
+            }else{
+                String password = validate.checkInputPassword();
+                if (!manager.checkLogin(accountNumber, password)) {
+                    System.out.println(bundle.getString("login_error2"));
+                    System.out.println(bundle.getString("login_failed"));
+                    System.out.println("-----------------------");
+                System.out.println(bundle.getString("login_again"));
+                
+                }else{
+                    checkCaptcha();
+                    check = false;
+                }
             }
         }
+       
     }
-
-    // Show a captcha and ask until the input is correct
-    public static void checkCaptcha(LoginManager manager, Validate validate, ResourceBundle bundle) {
+    
+public static void checkCaptcha() {
+        // Create the objects again here, so no parameters need to be passed in
+        LoginManager manager = new LoginManager();
+        Validate validate = new Validate();
+        // bundle is static in Validate, so a new Validate still has the chosen language
+        ResourceBundle bundle = validate.getBundle();
+ 
         String captcha = manager.generateCaptcha();
         System.out.println(bundle.getString("captcha") + captcha);
-
+ 
         String input = validate.enterCaptcha();
         while (!manager.checkCaptcha(input, captcha)) {
             System.out.println(bundle.getString("captcha_error"));
@@ -57,7 +62,7 @@ public class Main {
         }
         System.out.println(bundle.getString("login_status"));
     }
-
+ 
     // Print language menu
     public static void displayMenu() {
         System.out.println("--------Login Program---------");

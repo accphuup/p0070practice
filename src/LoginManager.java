@@ -2,51 +2,45 @@
 import java.util.ArrayList;
 import java.util.Random;
 
+
 public class LoginManager {
 
-    // Return null if login info is correct, otherwise the key of the error message
-    public int checkLogin(Account account) {
-        ArrayList<Account> accountList = new AccountData().setUpData();
-        boolean accountFound = false;
-        boolean passwordCorrect = false; 
-        
-        for (Account accounts : accountList) {
-            // Find accounts with the same account number
-            if (accounts.getAccount().contains(account.getAccount())) {
-                accountFound = true;
-                // Password matches: login info is correct
-                if (accounts.getPassword().contains(account.getPassword())) {
-                    passwordCorrect = true;
-                }
+    private ArrayList<Account> listAccounts = new AccountData().setUpData();
+    public boolean checkAccountExist(String accountNumber){ 
+        for (Account account : listAccounts) {
+            if (account.getAccount().contains(accountNumber)) {
+                return true;
             }
         }
-
-        if (!accountFound) {
-            return 1;
-        }
-        if (!passwordCorrect) {
-            return 2;
-        }
-        return 3;
+        return false;
     }
-
-    // Create a random 5-character captcha
-    public String generateCaptcha() {
-        Random rd = new Random();
-        String charSt = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    
+    public boolean checkLogin(String accountNumber , String password){
+        for (Account account : listAccounts) {
+            if (account.getAccount().contains(accountNumber) && account.getAccount().contains(password)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public String generateCaptcha(){
+        Random random = new Random();
+        String charCaptcha = "ABCDEFGHXYZ123456789";
         String result = "";
-
         for (int i = 0; i < 5; i++) {
-            // Pick a random position in charSt
-            int index = rd.nextInt(charSt.length());
-            // Append the character at that position
-            result += charSt.charAt(index);
+            
+            int index  = random.nextInt(charCaptcha.length());
+        result += charCaptcha.charAt(index);
         }
         return result;
     }
-
-    // Return true if the input characters are contained in the generated captcha
-    public boolean checkCaptcha(String captchaInput, String captchaGenerate) {
-        return captchaGenerate.contains(captchaInput);
+    
+    public boolean checkCaptcha(String captchaInput, String captchaGenerate){
+         if (captchaGenerate.contains(captchaInput)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
