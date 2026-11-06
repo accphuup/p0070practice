@@ -1,7 +1,19 @@
 
+/**
+ * Class Account declare object.
+ *
+ * @author Admin
+ */
 public class Account {
+
+    /**
+     * Attribute accountNumber.
+     */
     private String accountNumber;
-    
+
+    /**
+     * Attribute password.
+     */
     private String password;
 
     public Account() {
@@ -27,6 +39,5 @@ public class Account {
     public void setPassword(String password) {
         this.password = password;
     }
-    
-    
+
 }
